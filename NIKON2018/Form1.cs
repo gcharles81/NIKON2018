@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
+using Ini;
+using System.IO;
 
 namespace NIKON2018
 {
@@ -23,6 +25,7 @@ namespace NIKON2018
         {
             InitializeComponent();
 
+            FOLDERS(); /// Create folders if not found
 
             //Populate the Combobox with SerialPorts on the System
             ComboBox_Available_SerialPorts.Items.AddRange(SerialPort.GetPortNames());
@@ -34,6 +37,59 @@ namespace NIKON2018
 
         }
 
+        public void FOLDERS()
+        {
+
+            String path18 = "test_folder";
+
+            if (Directory.Exists(path18))
+            {
+
+            }
+            else
+            {
+                DirectoryInfo di = Directory.CreateDirectory(path18);
+            }
+
+
+            String path19 = "config";
+
+            if (Directory.Exists(path19))
+            {
+
+            }
+            else
+            {
+                DirectoryInfo di = Directory.CreateDirectory(path19);
+            }
+
+
+            path18 = "config/COM_Settings.ini";
+
+            if (File.Exists(path18))
+            {
+
+
+            }
+
+            else//create it 
+            {
+
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
+                IniFile ini = new IniFile("config/COM_Settings.ini");
+
+                ini.IniWriteValue("Info Serial", "File info ", "//File format created by Charles Galea 2018.");
+                ini.IniWriteValue("Info Serial", "File Created ", DateTime.Now.ToString());
+
+                ini.IniWriteValue("COMM SETTINGS", "PORT_NUMBER", "COM1");
+                ini.IniWriteValue("COMM SETTINGS", "BAUD_RATE", "9600");
+                ini.IniWriteValue("COMM SETTINGS", "PARITY", "None");
+                ini.IniWriteValue("COMM SETTINGS", "DATA_BITS", "8");
+
+
+                MessageBox.Show("Please make sure you setup COM Port for the first time");
+            }
+        }
         private void port_DataReceived(object sender, System.IO.Ports.SerialDataReceivedEventArgs e)
         {
             if (COMport.BytesToRead == 23) //i need only byte 113 so i use '==3'
